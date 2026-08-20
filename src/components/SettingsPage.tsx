@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import type { Person, Settings } from '../types'
 import { describeOffset, formatTimeOfDay } from '../lib/dates'
+import type { ParsedBackup } from '../lib/storage'
 import { REMINDER_CHOICES, makeBackup, parseBackup } from '../lib/storage'
 import { calendarFilename, countCalendarEvents, downloadCalendar } from '../lib/ics'
 import {
@@ -127,9 +128,7 @@ function DataCard({
   onReset,
 }: Omit<SettingsPageProps, 'onUpdateSettings'>) {
   const fileInput = useRef<HTMLInputElement>(null)
-  const [pending, setPending] = useState<{ people: Person[]; settings: Settings | null } | null>(
-    null,
-  )
+  const [pending, setPending] = useState<ParsedBackup | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [confirmingReset, setConfirmingReset] = useState(false)
 
@@ -163,7 +162,7 @@ function DataCard({
       <input
         ref={fileInput}
         type="file"
-        accept="application/json,.json"
+        accept="application/json,.json,text/csv,.csv"
         className="hidden"
         onChange={(event) => {
           const file = event.target.files?.[0]
@@ -173,8 +172,11 @@ function DataCard({
       />
       <button type="button" className="btn-secondary w-full" onClick={() => fileInput.current?.click()}>
         <Upload size={18} />
-        Restore from a backup
+        Restore from a file
       </button>
+      <p className="hint -mt-1">
+        A backup this app exported, or a CSV exported by hip.
+      </p>
 
       {error ? (
         <p className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400">
@@ -190,6 +192,16 @@ function DataCard({
             {pending.people.length === 1 ? 'person' : 'people'}?
           </p>
           <p className="hint mt-1">This replaces everyone currently in BD Alert.</p>
+          {pending.notices.length ? (
+            <ul className="mt-2 space-y-1">
+              {pending.notices.map((notice) => (
+                <li key={notice} className="hint flex items-start gap-1.5">
+                  <Info size={13} className="mt-0.5 shrink-0" />
+                  {notice}
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <div className="mt-3 flex gap-3">
             <button type="button" className="btn-secondary flex-1" onClick={() => setPending(null)}>
               Cancel

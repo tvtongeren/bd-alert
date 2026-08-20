@@ -69,6 +69,7 @@ comes round again next year.
 | **Works offline** | Fully cached; opens and works with no connection |
 | **Light and dark** | Follows your iPhone's appearance, or pick one |
 | **Backups** | Export everything to a JSON file, restore it on another device |
+| **Importing** | Restore also reads a CSV exported by hip., merging its rows into people |
 
 ### Where your data lives
 
@@ -76,6 +77,33 @@ In this browser's `localStorage`, on this device, and nowhere else. There is no
 account and no sync — which also means **the app is the only copy**. If you rely
 on it, export a backup from **Settings → Your data**, and send your dates to
 Calendar so they survive independently.
+
+### Coming from another app
+
+**Settings → Your data → Restore from a file** takes a backup this app exported,
+and also a CSV exported by [hip.](https://www.hip.app/) — no conversion step in
+between, so it can be done on the phone.
+
+hip writes one row per event, with the day, month and year in separate columns
+and the year blank where it is not known. BD Alert holds one record per person
+carrying up to two dates, so the reader merges rows by name: someone with a
+birthday row and an anniversary row arrives as one person with both. A blank
+year becomes BD Alert's own "day and month known, year not", so those dates
+still raise reminders, just without an age.
+
+Two things worth knowing before you tap Restore:
+
+- **It replaces, it does not merge.** Everyone already in BD Alert is cleared.
+  Export a backup first if you have entries the CSV does not cover.
+- **Anything the reader changed or skipped is listed** on the confirmation card
+  before you commit to it — merged rows, unreadable dates, and entries named
+  `Anniversary <couple>`, which hip has no other way to store and which arrive
+  here as a real anniversary.
+
+Person ids are derived from the name rather than being random, and the calendar
+export builds its `UID`s from them. Importing a later hip export therefore
+**updates** the events already in Apple Calendar instead of adding a second copy
+of every birthday.
 
 ---
 
@@ -134,6 +162,7 @@ src/
   lib/occurrences.ts   Resolving people into dated events and due reminders
   lib/ics.ts           The iCalendar file, alarms and all
   lib/storage.ts       localStorage, plus validation of anything imported
+  lib/hip.ts           Reading a CSV exported by the hip. app
   lib/notifications.ts Permissions, system notifications, the icon badge
   components/          The three tabs, the add/edit sheet, shared pieces
 scripts/

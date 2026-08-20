@@ -1,4 +1,5 @@
 import type { BackupBundle, Person, Settings } from '../types'
+import { looksLikeHipCsv, parseHipCsv } from './hip'
 
 const PEOPLE_KEY = 'bdalert.people.v1'
 const SETTINGS_KEY = 'bdalert.settings.v1'
@@ -143,10 +144,34 @@ export const makeBackup = (people: Person[], settings: Settings): BackupBundle =
 export interface ParsedBackup {
   people: Person[]
   settings: Settings | null
+  /** Anything the reader had to change or drop, shown before the restore is confirmed. */
+  notices: string[]
 }
 
-/** Throws with a readable message so the interface can show it verbatim. */
+/** A CSV exported by hip., rather than a backup written by this app. */
+function parseCsvExport(text: string): ParsedBackup {
+  if (!looksLikeHipCsv(text)) {
+    throw new Error('That file is neither a BD Alert backup nor a hip export.')
+  }
+
+  const { people, notices } = parseHipCsv(text)
+  return {
+    people: people.map(normalisePerson).filter((p): p is Person => p !== null),
+    settings: null,
+    notices,
+  }
+}
+
+/**
+ * Reads a backup this app wrote, or a CSV exported by hip.
+ *
+ * Throws with a readable message so the interface can show it verbatim.
+ */
 export function parseBackup(text: string): ParsedBackup {
+  if (!text.trim()) throw new Error('That file is empty.')
+  // Only JSON opens with a brace or a bracket; anything else is worth a CSV read.
+  if (!/^[[{]/.test(text.trimStart())) return parseCsvExport(text)
+
   let parsed: unknown
   try {
     parsed = JSON.parse(text)
@@ -170,7 +195,7 @@ export function parseBackup(text: string): ParsedBackup {
     ? null
     : (parsed as Record<string, unknown>).settings ?? null
 
-  return { people, settings: rawSettings ? normaliseSettings(rawSettings) : null }
+  return { people, settings: rawSettings ? normaliseSettings(rawSettings) : null, notices: [] }
 }
 
 export function clearAll(): void {
