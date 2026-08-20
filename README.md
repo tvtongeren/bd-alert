@@ -85,9 +85,9 @@ The app is a folder of static files. Any static host works; two easy routes:
 
 ### GitHub Pages
 
-`.github/workflows/deploy.yml` builds and publishes on every push to `main`.
-Turn it on once, under **Settings → Pages → Source → GitHub Actions**. The app
-then lives at `https://<user>.github.io/<repo>/`.
+`.github/workflows/deploy.yml` builds and publishes on every push to `main`,
+and switches Pages on itself the first time it runs. The app then lives at
+`https://<user>.github.io/<repo>/`.
 
 GitHub Pages needs the repository to be **public** on a free plan. On a private
 repository, use Netlify or Vercel instead.
