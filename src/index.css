@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply font-sans bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
+    -webkit-tap-highlight-color: transparent;
+    /* Stops the whole page rubber-banding under the fixed tab bar on iOS. */
+    overscroll-behavior-y: none;
+  }
+
+  /* Inputs below 16px make iOS Safari zoom in on focus. */
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px;
+    font-family: inherit;
+  }
+
+  ::selection {
+    @apply bg-brand-200 text-brand-900;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900;
+  }
+
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold
+           transition-transform duration-100 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-600 text-white shadow-sm shadow-brand-600/20 hover:bg-brand-700;
+  }
+
+  .btn-secondary {
+    @apply btn border border-slate-200 bg-white text-slate-800 hover:bg-slate-50
+           dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700;
+  }
+
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800;
+  }
+
+  .btn-danger {
+    @apply btn border border-red-200 bg-red-50 text-red-700
+           dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-slate-900
+           placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30
+           dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-300;
+  }
+
+  .hint {
+    @apply text-sm leading-relaxed text-slate-500 dark:text-slate-400;
+  }
+
+  .chip {
+    @apply select-none rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium
+           text-slate-700 transition active:scale-95
+           dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300;
+  }
+
+  .chip-active {
+    @apply border-brand-500 bg-brand-500 text-white dark:border-brand-500 dark:bg-brand-500 dark:text-white;
+  }
+
+  .section-title {
+    @apply px-1 pb-2 pt-5 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500;
+  }
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top), 0.75rem);
+  }
+
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+  }
+
+  /* Room for the fixed tab bar plus the home indicator. */
+  .pb-nav {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+}
